@@ -90,8 +90,8 @@ def main():
 
 	enable_ipv4_routing()
 
-	shell_cmd(["dhclient", WAN_IF])
-	shell_cmd(["dhclient", "-e", "IF_METRIC=50", LANMON_IF])
+	shell_cmd(["dhclient", "-nw", WAN_IF])
+	shell_cmd(["dhclient", "-nw", "-e", "IF_METRIC=50", LANMON_IF])
 	shell_cmd(["ifconfig", PASSTHROUGH_IF, "up", "10.254.0.1", "netmask", "255.255.255.0"])
 	# FIXME: use dns from dhcp
 	udhcpd(PASSTHROUGH_IF, "10.254.0.2", "10.254.0.2", "8.8.8.8", "10.254.0.1")
