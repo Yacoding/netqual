@@ -1,0 +1,7 @@
+#!/bin/bash
+
+dir=$(dirname $0)
+
+export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin
+
+python "$dir/net.py"
