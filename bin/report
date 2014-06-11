@@ -1,0 +1,9 @@
+#!/bin/bash
+
+dir=$(dirname $0)
+
+source "$dir/config.sh"
+
+target_file="$DB_DIR/report.txt"
+
+flock -w 10 "$target_file" cat >>"$target_file"

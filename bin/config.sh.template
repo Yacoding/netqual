@@ -1,0 +1,2 @@
+# Specify a directory to be used for storing the database
+DB_DIR=/a/directory

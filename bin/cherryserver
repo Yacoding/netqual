@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source $(dirname $0)/config.sh
+
+export DB_DIR
+
+python cherryserver.py

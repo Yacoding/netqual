@@ -1,0 +1,13 @@
+#!/bin/bash
+
+dir=$(dirname $0)
+
+while [ 0 ]; do
+	$dir/probe-ping www.google.com google-ping | $dir/report
+	sleep 60
+done &
+
+while [ 0 ]; do
+	$dir/probe-ping www.roadrunner.com twc-ping | $dir/report
+	sleep 60
+done &

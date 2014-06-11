@@ -1,0 +1,15 @@
+#!/bin/bash
+
+hw=$(/sbin/ethtool -P eth0 2>/dev/null)
+if [ "$?" = "0" ]; then
+	echo $hw | cut -d ' ' -f 3 | sed -re 's/://g'
+	exit 0
+fi
+
+hw=$(/sbin/ethtool -P wlan0 2>/dev/null)
+if [ "$?" = "0" ]; then
+	echo $hw | cut -d ' ' -f 3 | sed -re 's/://g'
+	exit 0
+fi
+
+exit 1

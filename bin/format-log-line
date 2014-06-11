@@ -1,0 +1,11 @@
+#!/bin/bash
+
+dir=$(dirname $0)
+
+ts=$1
+probe=$2
+value=$3
+
+machine_id=$($dir/get_machine_id)
+
+echo $ts,$machine_id,$probe,$value
