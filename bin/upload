@@ -1,0 +1,14 @@
+#!/bin/bash
+
+dir=$(dirname $0)
+source "$dir/config.sh"
+
+target_file="$DB_DIR/report.txt"
+
+curl --data-urlencode "data@$target_file" "$UPLOAD_URL"
+if [ ! "$?" = "0" ]; then
+	# failed to upload
+	exit 1
+fi
+
+rm "$target_file"

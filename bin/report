@@ -6,4 +6,14 @@ source "$dir/config.sh"
 
 target_file="$DB_DIR/report.txt"
 
-flock -w 10 "$target_file" cat >>"$target_file"
+(
+	flock -w 10 9 || exit 1
+
+	cat >>"$target_file"
+
+	if [ ! -e "$target_file" ]; then
+		echo "No target file"
+	fi
+
+	$dir/upload
+) 9>>"$target_file"
