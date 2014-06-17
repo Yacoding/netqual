@@ -13,4 +13,4 @@ else
 	value=$(echo "$value_raw" | egrep -o '[0-9]{1,3}% packet loss' | cut -d '%' -f 1)
 fi
 
-$dir/format-log-line "$ts" "$name" "$value"
+$dir/format-log-line "$ts" "wan" "$name" "$value"

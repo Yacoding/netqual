@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $0)/config.sh
+source $HOME/.netqualrc
 
 export DB_DIR
 export CONFIG_DIR

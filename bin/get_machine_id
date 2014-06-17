@@ -1,15 +1,11 @@
 #!/bin/bash
 
-hw=$(/sbin/ethtool -P eth0 2>/dev/null)
-if [ "$?" = "0" ]; then
-	echo $hw | cut -d ' ' -f 3 | sed -re 's/://g'
-	exit 0
-fi
-
-hw=$(/sbin/ethtool -P wlan0 2>/dev/null)
-if [ "$?" = "0" ]; then
-	echo $hw | cut -d ' ' -f 3 | sed -re 's/://g'
-	exit 0
-fi
+for i in ethwan eth0 wlan0; do
+	hw=$(</sys/class/net/$i/address)
+	if [ "$?" = "0" ]; then
+		echo $hw | sed -re 's/://g'
+		exit 0
+	fi
+done
 
 exit 1

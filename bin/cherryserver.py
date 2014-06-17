@@ -93,10 +93,9 @@ class DBServer(object):
 			line_res = fields[2]
 			line_dt = datetime.datetime.utcfromtimestamp(float(fields[0]))
 			if not macs.has_key(line_mac):
-				#print "didn't find mac {0}".format(line_mac)
+				print "didn't find mac {0}".format(line_mac)
 				continue
 			for (d1,d2) in macs[line_mac]:
-				#print "Considering range {0} - {1} for mac {2}".format(d1, d2, line_mac)
 				if not d1 < line_dt:
 					continue
 				if d2 != None and not d2 > line_dt:
@@ -133,6 +132,7 @@ def start():
 	get_app()
 	cherrypy.config.update( {
 		'server.socket_host': '0.0.0.0',
+		'server.socket_port': 8081,
 	} )
 	cherrypy.engine.start()
 	cherrypy.engine.block()

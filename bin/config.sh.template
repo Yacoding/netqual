@@ -2,3 +2,5 @@
 DB_DIR=/a/directory
 # Location to upload the data
 UPLOAD_URL="http://192.168.1.1/upload"
+# Config directory
+CONFIG_DIR=/home/me/.nqrc

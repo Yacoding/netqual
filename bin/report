@@ -2,7 +2,7 @@
 
 dir=$(dirname $0)
 
-source "$dir/config.sh"
+source "$HOME/.netqualrc"
 
 target_file="$DB_DIR/report.txt"
 
