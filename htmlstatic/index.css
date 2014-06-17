@@ -1,0 +1,13 @@
+body {
+	padding: 0;
+	margin: 0px;
+}
+
+a {
+	text-decoration: none;
+}
+
+div.menubar {
+	padding: 4px;
+	text-align: right;
+}
