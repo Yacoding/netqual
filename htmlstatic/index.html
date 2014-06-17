@@ -3,6 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="index.css">
 </head>
 
 <body>
@@ -10,13 +11,60 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<link type="text/css" rel="stylesheet" href="dropdown/jquery.dropdown.css">
+<script type="text/javascript" src="dropdown/jquery.dropdown.js"></script>
 
 <script>
 
-$(function () {$.get('http://127.0.0.1:8080/data', data_recvd) });
+$(function () {
+	$.ajax({
+		url: '/get_projects',
+		success: projects_recvd
+	});
+});
+
+function load_data_for_project(proj)
+{
+	$.ajax({
+		url: '/data?project=' + encodeURIComponent(proj) + '&res=wan',
+		context: {
+			div_name: "#container",
+			title: "Packet drops on WAN interface",
+		},
+		success: data_recvd
+	});
+	$.ajax({
+		url: '/data?project=' + encodeURIComponent(proj) + '&res=wlan',
+		context: {
+			div_name: "#container2",
+			title: "Packet drops on WLAN interface",
+		},
+		success: data_recvd
+	});
+}
+
+function add_project(proj)
+{
+	console.log(proj);
+	$("<li>").append($("<a>", {text: proj})).appendTo("#project-list");
+}
+
+function projects_recvd(data)
+{
+	sdata = data.split('\n');
+	for(var i = 0;i < sdata.length;i++){
+		add_project(sdata[i]);
+		if (i == 0) {
+			load_data_for_project(sdata[i]);
+		}
+	}
+}
 
 function data_recvd(data)
 {
+	div_name = $(this)[0].div_name;
+	title = $(this)[0].title;
+
 	sdata = data.split('\n');
 	var out = [];
 	var out2 = [];
@@ -30,8 +78,9 @@ function data_recvd(data)
 		}
 		fields = sdata[i].split(',');
 		var ts = parseInt(fields[0]);
-		var probe = fields[2];
-		var value = parseInt(fields[3]);
+		var res = fields[2];
+		var probe = fields[3];
+		var value = parseInt(fields[4]);
 
 		if (value == -1) {
 			value = null;
@@ -44,10 +93,10 @@ function data_recvd(data)
 		}
 	}
 
-	render_drop_chart("Packet drops on WAN interface", [['google-ping', out], ['twc-ping', out2]]);
+	render_drop_chart(title, [['google-ping', out], ['twc-ping', out2]], div_name);
 }
 
-function render_drop_chart(title, dats) {
+function render_drop_chart(title, dats, div_name) {
 	highcharts_config = {
             chart: {
                 zoomType: 'x'
@@ -105,12 +154,24 @@ function render_drop_chart(title, dats) {
 		});
 	}
 
-        $('#container').highcharts(highcharts_config);
+        $(div_name).highcharts(highcharts_config);
     }
 
 </script>
 
+<div id="dropdown-projects" class="dropdown dropdown-tip dropdown-anchor-right">
+    <ul id="project-list" class="dropdown-menu">
+    </ul>
+</div>
+
+<div class="menubar">
+<a href="#" data-dropdown="#dropdown-projects">Projects ▼</a>
+</div>
+
+<div class="main-content">
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+</div>
 
 </body>
 
