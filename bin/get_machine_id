@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec 2>/dev/null
+
 for i in ethwan eth0 wlan0; do
 	hw=$(</sys/class/net/$i/address)
 	if [ "$?" = "0" ]; then

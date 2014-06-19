@@ -1,7 +1,10 @@
 #!/bin/bash
 
 dir=$(dirname $0)
-source "$HOME/.netqualrc"
+source "$dir/lib.sh"
+
+config_file=$(get_config_file)
+source "$config_file"
 
 target_file="$DB_DIR/report.txt"
 

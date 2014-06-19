@@ -1,8 +1,23 @@
 #!/bin/bash
 
 dir=$(dirname $0)
+source "$dir/lib.sh"
 
-source "$HOME/.netqualrc"
+config_file=$(get_config_file)
+source "$config_file"
+
+if ! source "$config_file";
+then
+	echo "failed to source config file"
+	exit 1
+fi
+
+if [ ! -d "$DB_DIR" ]; then
+	if ! mkdir -p "$DB_DIR"; then
+		echo "failed to create $DB_DIR"
+		exit 1
+	fi
+fi
 
 target_file="$DB_DIR/report.txt"
 
