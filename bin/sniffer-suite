@@ -1,13 +1,36 @@
 #!/bin/bash
 
 dir=$(dirname $0)
+source $dir/lib.sh
 
-while [ 0 ]; do
-	$dir/probe-ping www.google.com google-ping | $dir/report
-	sleep 60
-done &
+# if we have a wan interface, do it on the wan interface
+wan_if=$(get_interface wan)
+if [ "$?" = "0" ]; then
+	# Have a wan interface
 
-while [ 0 ]; do
-	$dir/probe-ping www.roadrunner.com twc-ping | $dir/report
-	sleep 60
-done &
+	while [ 0 ]; do
+		$dir/probe-ping www.google.com google-ping wan "$wan_if" | $dir/report
+		sleep 60
+	done &
+
+	while [ 0 ]; do
+		$dir/probe-ping www.roadrunner.com twc-ping wan "$wan_if" | $dir/report
+		sleep 60
+	done &
+fi
+
+wlan_if=$(get_interface wlan)
+if [ "$?" = "0" ]; then
+	# Have a wan interface
+
+	while [ 0 ]; do
+		$dir/probe-ping www.google.com google-ping wlan "$wlan_if" | $dir/report
+		sleep 60
+	done &
+
+	while [ 0 ]; do
+		$dir/probe-ping www.roadrunner.com twc-ping wlan "$wlan_if" | $dir/report
+		sleep 60
+	done &
+fi
+
