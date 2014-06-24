@@ -4,8 +4,16 @@ import time
 import sys
 import os
 
-def shell_cmd(arr):
-	if subprocess.call(arr) != 0:
+def have_interface(ifname):
+	try:
+		bash_cmd("ip addr show dev \"{0}\"".format(ifname))
+	except:
+		return False
+
+	return True
+
+def shell_cmd(arr, ignore_fail=False):
+	if subprocess.call(arr) != 0 and ignore_fail == False:
 		raise RuntimeError("Command failed")
 
 def bash_cmd(s):
@@ -61,8 +69,10 @@ def clear_net():
 	# First disable all interfaces to avoid security breaches
 	# as we bring down the firewall
 
-	shell_cmd(["ifconfig", WAN_IF, "down"])
-	shell_cmd(["ifconfig", PASSTHROUGH_IF, "down"])
+	shell_cmd(["ifconfig", WAN_IF, "down"], ignore_fail=True)
+	shell_cmd(["ifconfig", PASSTHROUGH_IF, "down"], ignore_fail=True)
+	shell_cmd(["ifconfig", WLANMON_IF, "down"], ignore_fail=True)
+	shell_cmd(["ifconfig", LANMON_IF, "down"], ignore_fail=True)
 
 	shell_cmd(["iptables", "-P", "INPUT", "ACCEPT"])
 	shell_cmd(["iptables", "-P", "OUTPUT", "ACCEPT"])
@@ -108,9 +118,14 @@ def main():
 	clear_net()
 
 	# Setup firewall
+
 	shell_cmd(["iptables", "-P", "INPUT", "DROP"])
 	shell_cmd(["iptables", "-P", "OUTPUT", "DROP"])
 	shell_cmd(["iptables", "-P", "FORWARD", "DROP"])
+
+	# Just allow everything for lo
+	shell_cmd(["iptables", "-A", "INPUT", "-i", "lo", "-j", "ACCEPT"])
+	shell_cmd(["iptables", "-A", "OUTPUT", "-o", "lo", "-j", "ACCEPT"])
 
 	# Allow anything on oob interface
 	shell_cmd(["iptables", "-A", "INPUT", "-i", OOB_IF, "-j", "ACCEPT"])
@@ -133,6 +148,7 @@ def main():
 	# lanmon is just for our outbound traffic
 	shell_cmd(["iptables", "-A", "OUTPUT", "-o", LANMON_IF, "-j", "ACCEPT"])
 	shell_cmd(["iptables", "-A", "INPUT", "-i", LANMON_IF, "-m", "state", "--state", "ESTABLISHED,RELATED", "-j", "ACCEPT"])
+	shell_cmd(["iptables", "-A", "INPUT", "-i", LANMON_IF, "-p", "tcp", "--dport", "ssh", "-j", "ACCEPT"])
 
 	# wlanmon is just for our outbound traffic
 	shell_cmd(["iptables", "-A", "OUTPUT", "-o", WLANMON_IF, "-j", "ACCEPT"])
@@ -144,15 +160,46 @@ def main():
 	enable_ipv4_routing()
 
 	shell_cmd(["dhclient", "-nw", WAN_IF])
-	shell_cmd(["ifconfig", PASSTHROUGH_IF, "up", "10.254.0.1", "netmask", "255.255.255.0"])
-	# FIXME: use dns from dhcp
-	udhcpd(PASSTHROUGH_IF, "10.254.0.2", "10.254.0.2", "8.8.8.8", "10.254.0.1")
 
-	wlan_iface = wlan_fields[0]
-	wlan_ssid = wlan_fields[1]
-	wlan_psk = wlan_fields[2]
-	setup_wifi_wpa2_psk(wlan_iface, wlan_ssid, wlan_psk)
-	shell_cmd(["dhclient", "-nw", "-e", "IF_METRIC=50", WLANMON_IF])
+	if have_interface(PASSTHROUGH_IF):
+		shell_cmd([
+			"ifconfig",
+			PASSTHROUGH_IF,
+			"up",
+			"10.254.0.1",
+			"netmask",
+			"255.255.255.0"])
+		# FIXME: use dns from dhcp
+		udhcpd(
+			PASSTHROUGH_IF,
+			"10.254.0.2",
+			"10.254.0.2",
+			"8.8.8.8",
+			"10.254.0.1")
+
+	if have_interface(WLANMON_IF):
+		wlan_iface = wlan_fields[0]
+		wlan_ssid = wlan_fields[1]
+		wlan_psk = wlan_fields[2]
+		setup_wifi_wpa2_psk(wlan_iface, wlan_ssid, wlan_psk)
+
+		# FIXME: should wait for association instead
+		# The idea here is that setting the default route will fail if we are
+		# not associated to the ap by the time we invoke dhclient.
+		time.sleep(5)
+
+		shell_cmd([
+			"dhclient",
+			"-nw",
+			"-e", "IF_METRIC=50",
+			WLANMON_IF])
+
+	if have_interface(LANMON_IF):
+		shell_cmd([
+			"dhclient",
+			"-nw",
+			"-e", "IF_METRIC=60",
+			LANMON_IF])
 
 	wait_for_connectivity()
 	start_ntp()
