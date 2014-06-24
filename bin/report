@@ -4,7 +4,6 @@ dir=$(dirname $0)
 source "$dir/lib.sh"
 
 config_file=$(get_config_file)
-source "$config_file"
 
 if ! source "$config_file";
 then

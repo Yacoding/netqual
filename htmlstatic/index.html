@@ -34,10 +34,18 @@ function load_data_for_project(proj)
 		success: data_recvd
 	});
 	$.ajax({
-		url: '/data?project=' + encodeURIComponent(proj) + '&res=wlan',
+		url: '/data?project=' + encodeURIComponent(proj) + '&res=wlanmon',
 		context: {
 			div_name: "#container2",
 			title: "Packet drops on WLAN interface",
+		},
+		success: data_recvd
+	});
+	$.ajax({
+		url: '/data?project=' + encodeURIComponent(proj) + '&res=lanmon',
+		context: {
+			div_name: "#container3",
+			title: "Packet drops on LAN interface",
 		},
 		success: data_recvd
 	});
@@ -170,6 +178,7 @@ function render_drop_chart(title, dats, div_name) {
 <div class="main-content">
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="container3" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 </div>
 
 </body>

@@ -4,3 +4,7 @@ DB_DIR=/a/directory
 UPLOAD_URL="http://192.168.1.1/upload"
 # Config directory
 CONFIG_DIR=/home/me/.nqrc
+
+#INTERFACE_wan=ethwan
+#INTERFACE_wlanmon=ethwlanmon
+#INTERFACE_lanmon=ethlanmon

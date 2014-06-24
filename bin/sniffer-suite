@@ -19,18 +19,32 @@ if [ "$?" = "0" ]; then
 	done &
 fi
 
-wlan_if=$(get_interface wlan)
+wlan_if=$(get_interface wlanmon)
 if [ "$?" = "0" ]; then
 	# Have a wan interface
 
 	while [ 0 ]; do
-		$dir/probe-ping www.google.com google-ping wlan "$wlan_if" | $dir/report
+		$dir/probe-ping www.google.com google-ping wlanmon "$wlan_if" | $dir/report
 		sleep 60
 	done &
 
 	while [ 0 ]; do
-		$dir/probe-ping www.roadrunner.com twc-ping wlan "$wlan_if" | $dir/report
+		$dir/probe-ping www.roadrunner.com twc-ping wlanmon "$wlan_if" | $dir/report
 		sleep 60
 	done &
 fi
 
+lanmon_if=$(get_interface lanmon)
+if [ "$?" = "0" ]; then
+	# Have a wan interface
+
+	while [ 0 ]; do
+		$dir/probe-ping www.google.com google-ping lanmon "$lanmon_if" | $dir/report
+		sleep 60
+	done &
+
+	while [ 0 ]; do
+		$dir/probe-ping www.roadrunner.com twc-ping lanmon "$lanmon_if" | $dir/report
+		sleep 60
+	done &
+fi

@@ -93,7 +93,7 @@ class DBServer(object):
 			line_res = fields[2]
 			line_dt = datetime.datetime.utcfromtimestamp(float(fields[0]))
 			if not macs.has_key(line_mac):
-				print "didn't find mac {0}".format(line_mac)
+				print "warning: didn't find mac {0} in projects".format(line_mac)
 				continue
 			for (d1,d2) in macs[line_mac]:
 				if not d1 < line_dt:
@@ -111,6 +111,7 @@ class DBServer(object):
 
 
 def parse_date(s):
+	print "Parsing {0} {1}".format(s, datetime.datetime.strptime)
 	return datetime.datetime.strptime(s, "%Y%m%d-%H%M%S")
 
 #cherrypy_config = { '/index.html':
@@ -138,4 +139,7 @@ def start():
 	cherrypy.engine.block()
 
 if __name__ == '__main__':
+	# workaround strptime bug in multithreaded contexts
+	datetime.datetime.strptime('', '')
+
 	start()
