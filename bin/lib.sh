@@ -50,5 +50,7 @@ function get_interface ()
 		else
 			return 1
 		fi
+	else
+		return 1
 	fi
 }

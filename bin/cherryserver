@@ -21,4 +21,4 @@ fi
 export DB_DIR
 export CONFIG_DIR="$NQ_CONFIG_DIR"
 
-python cherryserver.py
+python $dir/cherryserver.py
